@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Checkout SendBox</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        #order-details {
+            text-align: left;
+            margin: 20px 0;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        #order-details p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #0078ff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #005fcc;
+        }
+
+        button.fail {
+            background-color: #ff4d4d;
+        }
+
+        button.fail:hover {
+            background-color: #cc0000;
+        }
+
+        .loader {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loader span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            margin: 3px;
+            background-color: #0078ff;
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+
+        .loader span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .loader span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes blink {
+            0%, 80%, 100% {
+                transform: scale(0);
+            }
+            40% {
+                transform: scale(1);
+            }
+        }
+        button .loader {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            border-top: 2px solid #0078ff;
+            animation: spin 1s linear infinite;
+            margin-right: 5px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Checkout</h1>
+    <div id="order-details">
+        <p><strong>Loading order details...</strong></p>
+        <div class="loader">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+    <div class="button-group" style="display: none;">
+        <button class="success" onclick="updateOrderStatus('success')">Payment Success</button>
+        <button class="fail" onclick="updateOrderStatus('fail')">Payment Fail</button>
+    </div>
+</div>
+
+<script>
+    // Utility function to fetch query string parameters
+    function getQueryParam(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+    }
+
+    // Generate a random transaction ID (36 characters UUID-like string)
+    function generateTransactionId() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            const r = (Math.random() * 16) | 0;
+            const v = c === 'x' ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
+        });
+    }
+
+    // Fetch the order ID from query string
+    const orderId = getQueryParam('order_id');
+    const checkSum = getQueryParam('checksum');
+    if (!orderId) {
+        document.getElementById('order-details').innerHTML = '<p><strong>Error:</strong> Order ID is missing in the URL!</p>';
+    }else{
+        fetchOrderDetails(orderId);
+    }
+
+    // Fetch order details
+    async function fetchOrderDetails(orderId) {
+        try {
+            const response = await fetch(`./?action=get_order&order_id=${orderId}`);
+            if (response.ok) {
+                const order = await response.json();
+                if (order && order.data) {
+                    displayOrderDetails(order.data);
+                } else {
+                    document.getElementById('order-details').innerHTML = '<p><strong>Error:</strong> Unable to fetch order details.</p>';
+                }
+            } else {
+                document.getElementById('order-details').innerHTML = `<p><strong>Error:</strong> Unable to fetch order details (HTTP ${response.status}).</p>`;
+            }
+        } catch (error) {
+            document.getElementById('order-details').innerHTML = `<p><strong>Error:</strong> ${error.message}</p>`;
+        }
+    }
+
+    // Display order details
+    function displayOrderDetails(order) {
+        const orderDetails = `
+      <p><strong>Order ID:</strong> ${order.order_id || 'N/A'}</p>
+      <p><strong>Amount:</strong> ${order.amount || 'N/A'} ${order.currency_code || ''}</p>
+      <p><strong>Description:</strong> ${order.description || 'N/A'}</p>
+      <p><strong>Order Date:</strong> ${order.order_date || 'N/A'}</p>
+    `;
+        document.getElementById('order-details').innerHTML = orderDetails;
+
+        // Show the buttons
+        document.querySelector('.button-group').style.display = 'flex';
+        document.querySelector('.button-group').dataset.orderAmount = order.amount; // Store the amount for later usage
+    }
+
+    // Handle button click to update order status
+    // Handle button click to update order status
+    async function updateOrderStatus(status) {
+        try {
+            const button = status === 'success'
+                ? document.querySelector('button.success')
+                : document.querySelector('button.fail');
+
+            // Show loader inside the button
+            button.disabled = true; // Disable button
+            const originalText = button.innerHTML;
+            button.innerHTML = `<span class="loader"></span> Processing...`;
+
+            const transactionId = generateTransactionId();
+            const orderAmount = document.querySelector('.button-group').dataset.orderAmount;
+
+            // Prepare data to post
+            const postData = {
+                order_id: orderId,
+                payment_status: status === 'success' ? 'Paid' : 'Failed',
+                received_amount: parseFloat(orderAmount), // Use received amount from order details
+                transaction_id: transactionId,
+            };
+
+            // POST request to `./?action=ipn`
+            const response = await fetch(`./?action=ipn&checksum=${checkSum}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(postData),
+            });
+
+            button.disabled = false; // Re-enable button after request
+            button.innerHTML = originalText; // Restore original button text
+
+            if (response.ok) {
+                const responseData = await response.json();
+
+                if (responseData.status === 'success' && responseData.data?.redirect_url) {
+                    const redirectUrl = responseData.data.redirect_url;
+
+                    // Show a message before redirecting
+                    const messageDiv = document.createElement('div');
+                    messageDiv.style.position = 'fixed';
+                    messageDiv.style.top = '0';
+                    messageDiv.style.left = '0';
+                    messageDiv.style.width = '100%';
+                    messageDiv.style.height = '100%';
+                    messageDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                    messageDiv.style.display = 'flex';
+                    messageDiv.style.justifyContent = 'center';
+                    messageDiv.style.alignItems = 'center';
+                    messageDiv.style.color = '#fff';
+                    messageDiv.style.fontSize = '1.5rem';
+                    messageDiv.style.zIndex = '9999';
+                    messageDiv.innerText = 'You are being redirected to the merchant page...';
+
+                    document.body.appendChild(messageDiv);
+
+                    // Redirect after 3 seconds
+                    setTimeout(() => {
+                        window.location.href = redirectUrl;
+                    }, 3000);
+                } else {
+                    alert(responseData.message || 'Failed to mark payment as status.');
+                }
+            } else {
+                try {
+                    const responseData = await response.json();
+                    alert(responseData.message || 'Failed to mark payment as status.');
+                }catch (e){
+                    alert(`Failed to mark payment as ${status.toUpperCase()} (HTTP ${response.status})`);
+                }
+            }
+        } catch (error) {
+            const button = status === 'success'
+                ? document.querySelector('button.success')
+                : document.querySelector('button.fail');
+            button.disabled = false; // Re-enable button on error
+            button.innerHTML = originalText; // Restore original button text
+
+            alert(`Error: ${error.message}`);
+        }
+    }
+
+
+    // Fetch the order details on page load
+
+</script>
+
+</body>
+</html>
