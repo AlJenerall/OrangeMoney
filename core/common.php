@@ -23,6 +23,23 @@ function output($status, $message, $data = null, $httpCode = 200) {
     exit;
 }
 
+/**
+ * Simple helper to append messages to the gateway log file.
+ */
+function logMessage($message, $file = null) {
+    if ($file === null) {
+        $file = dirname(__DIR__) . '/gateway.log';
+    }
+    file_put_contents($file, date('Y-m-d H:i:s') . ' - ' . $message . PHP_EOL, FILE_APPEND);
+}
+
+spl_autoload_register(function ($class) {
+    $path = __DIR__ . '/' . $class . '.php';
+    if (file_exists($path)) {
+        require_once $path;
+    }
+});
+
 function validateInputs($inputData, $requiredFields) {
     foreach ($requiredFields as $field) {
         if (empty($inputData[$field])) {

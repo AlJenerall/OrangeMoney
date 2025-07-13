@@ -10,7 +10,14 @@
  */
 define('ROOTDIR', __DIR__);
 
-require_once ROOTDIR . '/core/common.php';
+require_once __DIR__ . '/core/common.php';
+
+// Double-check that core functions are loaded
+if (!function_exists('validateApiKey')) {
+    // If the function is missing, attempt to load again and log the issue
+    require_once __DIR__ . '/core/common.php';
+    error_log('validateApiKey function missing after include of common.php');
+}
 $apiKeys = include ROOTDIR . '/config/api_keys.php';
 require_once ROOTDIR . '/env.php'; // Charger les variables d'environnement
 

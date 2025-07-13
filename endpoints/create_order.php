@@ -4,16 +4,20 @@
 require_once __DIR__ . '/../core/OrderModel.php';
 require_once __DIR__ . '/../config/database.php'; // Chemin mis à jour
 require_once __DIR__ . '/../core/common.php';
-require_once __DIR__ . '/../core/OrangeMoneyGateway.php'; // Inclure la classe OrangeMoneyGateway
+$gatewayFile = __DIR__ . '/../core/OrangeMoneyGateway.php';
+if (file_exists($gatewayFile)) {
+    require_once $gatewayFile;
+} else {
+    logMessage('Gateway file missing: ' . $gatewayFile);
+}
+if (!class_exists('OrangeMoneyGateway')) {
+    logMessage('OrangeMoneyGateway class not found after include');
+}
 $omConfig = include __DIR__ . '/../config/orange_money.php'; // Charger la configuration Orange Money
 $env = include __DIR__ . '/../env.php';
 
 // Valider la clé API avant de traiter la requête
 validateApiKey();
-
-function logMessage($message) {
-    file_put_contents('gateway.log', date('Y-m-d H:i:s') . " - " . $message . "\n", FILE_APPEND);
-}
 
 // La logique de routage est maintenant dans index.php, ce fichier est un handler spécifique
 // Donc, la fonction handleCreateOrder est appelée directement.
@@ -53,7 +57,8 @@ function handleCreateOrder() {
     $orangeRes = $omGateway->initTransaction($payload);
     $orangeData = json_decode($orangeRes['body'], true);
 
-    logMessage("Orange Response: " . json_encode($orangeData));
+    logMessage("Orange Response Code: " . $orangeRes['status_code']);
+    logMessage("Orange Response Body: " . json_encode($orangeData));
 
     if ($orangeRes['status_code'] !== 201 || !isset($orangeData['payment_url'])) {
         output('error', 'Orange payment initiation failed: ' . ($orangeData['message'] ?? 'Unknown error'), null, 500);

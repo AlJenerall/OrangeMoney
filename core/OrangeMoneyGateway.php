@@ -25,14 +25,23 @@ class OrangeMoneyGateway {
         }
 
         $url = $this->baseUrl . '/oauth/v2/token';
+        logMessage('Requesting new access token');
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['grant_type' => 'client_credentials']));
+
+        // Use cURL's built-in basic authentication.
+        // We still specify the content type for clarity.
         curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($ch, CURLOPT_USERPWD, $this->clientId . ':' . $this->clientSecret);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/x-www-form-urlencoded'
+        ]);
         $response = curl_exec($ch);
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        logMessage('Token response code: ' . $code);
+        logMessage('Token response body: ' . $response);
         curl_close($ch);
         if ($code === 200) {
             $data = json_decode($response, true);
@@ -62,6 +71,8 @@ class OrangeMoneyGateway {
         ]);
         $response = curl_exec($ch);
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        logMessage('Init transaction code: ' . $code);
+        logMessage('Init transaction body: ' . $response);
         curl_close($ch);
         return ['status_code' => $code, 'body' => $response];
     }
@@ -85,6 +96,8 @@ class OrangeMoneyGateway {
         ]);
         $response = curl_exec($ch);
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        logMessage('Status check code: ' . $code);
+        logMessage('Status check body: ' . $response);
         curl_close($ch);
         return ['status_code' => $code, 'body' => $response];
     }
