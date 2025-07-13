@@ -30,11 +30,11 @@ class OrangeMoneyGateway {
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['grant_type' => 'client_credentials']));
 
-        // Build the Basic Authorization header manually to make the
-        // authentication method explicit.
-        $basicToken = base64_encode($this->clientId . ':' . $this->clientSecret);
+        // Use cURL's built-in basic authentication.
+        // We still specify the content type for clarity.
+        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        curl_setopt($ch, CURLOPT_USERPWD, $this->clientId . ':' . $this->clientSecret);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: Basic ' . $basicToken,
             'Content-Type: application/x-www-form-urlencoded'
         ]);
         $response = curl_exec($ch);
