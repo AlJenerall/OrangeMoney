@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Checkout SendBox</title>
+    <style>
+        /* ... (styles inchangés) ... */
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Checkout</h1>
+    <div id="order-details">
+        <p><strong>Loading order details...</strong></p>
+        <div class="loader">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+    <div class="button-group" style="display: none;">
+        <button class="success" onclick="updateOrderStatus('success')">Payment Success</button>
+        <button class="fail" onclick="updateOrderStatus('fail')">Payment Fail</button>
+    </div>
+</div>
+
+<script>
+    // Utility function to fetch query string parameters
+    function getQueryParam(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+    }
+
+    // Generate a random transaction ID (36 characters UUID-like string)
+    function generateTransactionId() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            const r = (Math.random() * 16) | 0;
+            const v = c === 'x' ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
+        });
+    }
+
+    // Fetch the order ID from query string
+    const orderId = getQueryParam('order_id'); // C'est l'ID interne de la base de données
+    const checkSum = getQueryParam('checksum'); // Le checksum généré côté serveur
+
+    if (!orderId || !checkSum) {
+        document.getElementById('order-details').innerHTML = '<p><strong>Error:</strong> Order ID or Checksum is missing in the URL!</p>';
+    } else {
+        fetchOrderDetails(orderId);
+    }
+
+    // Fetch order details
+    async function fetchOrderDetails(orderId) {
+        try {
+            // Note: Pour cette démo, la clé API n'est pas envoyée depuis le frontend.
+            // Dans un vrai scénario, vous auriez besoin d'un mécanisme d'authentification.
+            const response = await fetch(`./?action=get_order&order_id=${orderId}`);
+            if (response.ok) {
+                const order = await response.json();
+                if (order && order.data) {
+                    displayOrderDetails(order.data);
+                } else {
+                    document.getElementById('order-details').innerHTML = '<p><strong>Error:</strong> Unable to fetch order details.</p>';
+                }
+            } else {
+                document.getElementById('order-details').innerHTML = `<p><strong>Error:</strong> Unable to fetch order details (HTTP ${response.status}).</p>`;
+            }
+        } catch (error) {
+            document.getElementById('order-details').innerHTML = `<p><strong>Error:</strong> ${error.message}</p>`;
+        }
+    }
+
+    // Display order details
+    function displayOrderDetails(order) {
+        const orderDetails = `
+      <p><strong>Order ID:</strong> ${order.order_id || 'N/A'}</p>
+      <p><strong>Amount:</strong> ${order.amount || 'N/A'} ${order.currency_code || ''}</p>
+      <p><strong>Description:</strong> ${order.description || 'N/A'}</p>
+      <p><strong>Order Date:</strong> ${order.order_date || 'N/A'}</p>
+    `;
+        document.getElementById('order-details').innerHTML = orderDetails;
+
+        // Show the buttons
+        document.querySelector('.button-group').style.display = 'flex';
+        document.querySelector('.button-group').dataset.orderAmount = order.amount; // Store the amount for later usage
+    }
+
+    // Handle button click to update order status
+    async function updateOrderStatus(status) {
+        try {
+            const button = status === 'success'
+                ? document.querySelector('button.success')
+                : document.querySelector('button.fail');
+
+            button.disabled = true;
+            const originalText = button.innerHTML;
+            button.innerHTML = `<span class="loader"></span> Processing...`;
+
+            const transactionId = generateTransactionId();
+            const orderAmount = document.querySelector('.button-group').dataset.orderAmount;
+
+            const postData = {
+                order_id: orderId, // L'ID interne de la base de données
+                payment_status: status === 'success' ? 'Paid' : 'Failed',
+                received_amount: parseFloat(orderAmount),
+                transaction_id: transactionId,
+            };
+
+            const response = await fetch(`./?action=ipn&checksum=${checkSum}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Dans un vrai scénario, vous enverriez ici la clé API ou un token d'authentification
+                    // 'X-Api-Key': 'YOUR_API_KEY_HERE'
+                },
+                body: JSON.stringify(postData),
+            });
+
+            button.disabled = false;
+            button.innerHTML = originalText;
+
+            if (response.ok) {
+                const responseData = await response.json();
+
+                if (responseData.status === 'success' && responseData.data?.redirect_url) {
+                    const redirectUrl = responseData.data.redirect_url;
+
+                    const messageDiv = document.createElement('div');
+                    messageDiv.style.position = 'fixed';
+                    messageDiv.style.top = '0';
+                    messageDiv.style.left = '0';
+                    messageDiv.style.width = '100%';
+                    messageDiv.style.height = '100%';
+                    messageDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                    messageDiv.style.display = 'flex';
+                    messageDiv.style.justifyContent = 'center';
+                    messageDiv.style.alignItems = 'center';
+                    messageDiv.style.color = '#fff';
+                    messageDiv.style.fontSize = '1.5rem';
+                    messageDiv.style.zIndex = '9999';
+                    messageDiv.innerText = 'You are being redirected to the merchant page...';
+
+                    document.body.appendChild(messageDiv);
+
+                    setTimeout(() => {
+                        window.location.href = redirectUrl;
+                    }, 3000);
+                } else {
+                    alert(responseData.message || 'Failed to mark payment as status.');
+                }
+            } else {
+                try {
+                    const responseData = await response.json();
+                    alert(responseData.message || 'Failed to mark payment as status.');
+                } catch (e) {
+                    alert(`Failed to mark payment as ${status.toUpperCase()} (HTTP ${response.status})`);
+                }
+            }
+        } catch (error) {
+            const button = status === 'success'
+                ? document.querySelector('button.success')
+                : document.querySelector('button.fail');
+            button.disabled = false;
+            button.innerHTML = originalText;
+
+            alert(`Error: ${error.message}`);
+        }
+    }
+</script>
+</body>
+</html>
