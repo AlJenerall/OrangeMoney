@@ -1,0 +1,94 @@
+[14-Aug-2025 06:14:48 America/Boise] --- create_order.php: Début du traitement (logique MD5 de Dhru) ---
+[14-Aug-2025 06:14:48 America/Boise] create_order.php: Données reçues (JSON, GET, POST): Array
+(
+    [amount] => 1.00
+    [currency_code] => USD
+    [description] => #INV-14-08-2025-21998
+    [customer_name] => Limspro
+    [customer_email] => mdalimoubah98@gmail.com
+    [custom_id] => 21998
+    [ipn_url] => https://gsmeasytech.dhrufusion.in/api/system/v1/ipn?gateway_id=bb2492c5-db6d-41e7-b000-e08972f711c7
+    [success_url] => https://gsmeasytech.dhrufusion.net/view-retail-order/?id=187594f7-8a68-43bf-a4bf-069ae1ede4c5&payment=success
+    [fail_url] => https://gsmeasytech.dhrufusion.net/view-retail-order/?id=187594f7-8a68-43bf-a4bf-069ae1ede4c5&payment=fail
+    [source_website] => https://gsmeasytech.dhrufusion.net
+    [workspace] => gsmeasytech
+    [action] => create_order
+)
+
+[14-Aug-2025 06:14:48 America/Boise] CREATE_NEW: Création d'une nouvelle commande pour la facture 21998.
+[14-Aug-2025 06:14:48 America/Boise] create_order.php: Commande créée/récupérée: Array
+(
+    [amount] => 1
+    [amount_gnf] => 0
+    [custom_id] => 21998
+    [description] => #INV-14-08-2025-21998
+    [customer_email] => mdalimoubah98@gmail.com
+    [ipn_url] => https://gsmeasytech.dhrufusion.in/api/system/v1/ipn?gateway_id=bb2492c5-db6d-41e7-b000-e08972f711c7
+    [success_url] => https://gsmeasytech.dhrufusion.net/view-retail-order/?id=187594f7-8a68-43bf-a4bf-069ae1ede4c5&payment=success
+    [fail_url] => https://gsmeasytech.dhrufusion.net/view-retail-order/?id=187594f7-8a68-43bf-a4bf-069ae1ede4c5&payment=fail
+    [order_date] => 2025-08-14 06:14:48
+    [status] => pending_creation
+    [payment_url] => 
+    [pay_token] => 
+    [notif_token] => 
+    [order_id_om] => 
+)
+ (ID: 614)
+[14-Aug-2025 06:14:48 America/Boise] create_order.php: URL de redirection finale renvoyée: https://tty.yqp.mybluehost.me/orange_money/checkout.html?order_id=614&checksum=ad4ec358c5d6d61bfe92309a9e781e14
+[14-Aug-2025 06:14:52 America/Boise] --- create_order.php: Début du traitement (logique MD5 de Dhru) ---
+[14-Aug-2025 06:14:52 America/Boise] create_order.php: Données reçues (JSON, GET, POST): Array
+(
+    [amount] => 1.00
+    [currency_code] => USD
+    [description] => #INV-14-08-2025-21998
+    [customer_name] => Limspro
+    [customer_email] => mdalimoubah98@gmail.com
+    [custom_id] => 21998
+    [ipn_url] => https://gsmeasytech.dhrufusion.in/api/system/v1/ipn?gateway_id=bb2492c5-db6d-41e7-b000-e08972f711c7
+    [success_url] => https://gsmeasytech.dhrufusion.net/view-retail-order/?id=187594f7-8a68-43bf-a4bf-069ae1ede4c5&payment=success
+    [fail_url] => https://gsmeasytech.dhrufusion.net/view-retail-order/?id=187594f7-8a68-43bf-a4bf-069ae1ede4c5&payment=fail
+    [source_website] => https://gsmeasytech.dhrufusion.net
+    [workspace] => gsmeasytech
+    [action] => create_order
+)
+
+[14-Aug-2025 06:14:52 America/Boise] REUSE_EXISTING: Réutilisation de l'URL pour la facture 21998.
+[14-Aug-2025 06:14:52 America/Boise] create_order.php: URL de redirection finale renvoyée: https://tty.yqp.mybluehost.me/orange_money/checkout.html?order_id=614&checksum=ad4ec358c5d6d61bfe92309a9e781e14
+[14-Aug-2025 06:14:53 America/Boise] --- create_order.php: Début du traitement (logique MD5 de Dhru) ---
+[14-Aug-2025 06:14:53 America/Boise] create_order.php: Données reçues (JSON, GET, POST): Array
+(
+    [amount] => 1.00
+    [currency_code] => USD
+    [description] => #INV-14-08-2025-21998
+    [customer_name] => Limspro
+    [customer_email] => mdalimoubah98@gmail.com
+    [custom_id] => 21998
+    [ipn_url] => https://gsmeasytech.dhrufusion.in/api/system/v1/ipn?gateway_id=bb2492c5-db6d-41e7-b000-e08972f711c7
+    [success_url] => https://gsmeasytech.dhrufusion.net/view-retail-order/?id=187594f7-8a68-43bf-a4bf-069ae1ede4c5&payment=success
+    [fail_url] => https://gsmeasytech.dhrufusion.net/view-retail-order/?id=187594f7-8a68-43bf-a4bf-069ae1ede4c5&payment=fail
+    [source_website] => https://gsmeasytech.dhrufusion.net
+    [workspace] => gsmeasytech
+    [action] => create_order
+)
+
+[14-Aug-2025 06:14:53 America/Boise] REUSE_EXISTING: Réutilisation de l'URL pour la facture 21998.
+[14-Aug-2025 06:14:53 America/Boise] create_order.php: URL de redirection finale renvoyée: https://tty.yqp.mybluehost.me/orange_money/checkout.html?order_id=614&checksum=ad4ec358c5d6d61bfe92309a9e781e14
+[14-Aug-2025 06:15:22 America/Boise] --- ipn.php: Début du traitement IPN (Version Corrigée Dhru) ---
+[14-Aug-2025 06:15:22 America/Boise] ipn.php: IPN reçu du simulateur: Array
+(
+    [order_id] => 614
+    [payment_status] => Paid
+    [received_amount] => 1
+    [transaction_id] => 290b29de-7f3f-4c17-925a-3419d41412d6
+)
+
+[14-Aug-2025 06:15:22 America/Boise] ipn.php: Envoi IPN à Dhru - URL: https://gsmeasytech.dhrufusion.in/api/system/v1/ipn?gateway_id=bb2492c5-db6d-41e7-b000-e08972f711c7
+[14-Aug-2025 06:15:22 America/Boise] ipn.php: Payload Dhru: {"checksum":"d3ca3bc282ce410e412c19b015c476e1","order_id":"21998","payment_status":"Paid","received_amount":1,"transaction_id":"290b29de-7f3f-4c17-925a-3419d41412d6","gateway_response":{"status":"success","gateway_order_id":"614","payment_method":"orange_money"}}
+[14-Aug-2025 06:15:22 America/Boise] ipn.php: Checksum calculé: d3ca3bc282ce410e412c19b015c476e1 (order:21998, amount:1, key:d405b74d)
+[14-Aug-2025 06:15:22 America/Boise] ipn.php: Réponse Dhru - Code HTTP: 400
+[14-Aug-2025 06:15:22 America/Boise] ipn.php: Réponse Dhru - Body: {"status":"error","message":"Payment is not verified!","code":400,"meta":{"application":"Dhru Fusion Pro","version":"2025.03","request_id":"96f060960e784cb3-SLC"}}
+[14-Aug-2025 06:15:22 America/Boise] ipn.php: Méthode 1 échouée, tentative avec format webhook Dhru
+[14-Aug-2025 06:15:25 America/Boise] ipn.php: Méthode 2 - Code HTTP: 400, Réponse: {"status":"error","message":"Payment is not verified! Status: Success Message: ","code":400,"meta":{"application":"Dhru Fusion Pro","version":"2025.03","request_id":"96f060975b6cd96a-SLC"}}
+[14-Aug-2025 06:15:25 America/Boise] ipn.php: Tentative finale avec POST simple
+[14-Aug-2025 06:15:25 America/Boise] ipn.php: Méthode 3 - Code HTTP: 400, Réponse: {"status":"error","message":"Payment is not verified!","code":400,"meta":{"application":"Dhru Fusion Pro","version":"2025.03","request_id":"96f060a76e92530a-SLC"}}
+[14-Aug-2025 06:15:25 America/Boise] ipn.php: Redirection finale vers: https://gsmeasytech.dhrufusion.net/view-retail-order/?id=187594f7-8a68-43bf-a4bf-069ae1ede4c5&payment=success
